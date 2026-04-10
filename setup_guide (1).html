@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delivery LMS — Supabase Setup Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Noto+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans',sans-serif;background:#0A0A14;color:#E0E0E0;line-height:1.7;padding:0}
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#FF6B00;border-radius:3px}
+  .top-bar{background:linear-gradient(135deg,#FF6B00,#FF9500);padding:20px 32px;display:flex;align-items:center;gap:14px}
+  .top-bar h1{font-family:'Baloo 2';color:white;font-size:24px;font-weight:800}
+  .top-bar span{font-size:32px}
+  .container{max-width:860px;margin:0 auto;padding:32px 24px}
+  h2{font-family:'Baloo 2';font-weight:700;color:#FF6B00;font-size:20px;margin:36px 0 14px;display:flex;align-items:center;gap:8px}
+  h3{font-family:'Baloo 2';font-weight:600;color:white;font-size:16px;margin:20px 0 10px}
+  p{color:#ccc;font-size:14px;margin-bottom:10px;line-height:1.8}
+  .step-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+  .step-card::before{content:attr(data-step);position:absolute;top:0;right:0;background:rgba(255,107,0,0.15);color:#FF9550;font-family:'Baloo 2';font-weight:700;font-size:11px;padding:4px 10px;border-radius:0 14px 0 8px}
+  .step-card h3{margin-top:0;color:#FF9550}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#FF6B00;color:white;font-weight:700;font-size:12px;flex-shrink:0;margin-right:8px}
+  .step-row{display:flex;align-items:flex-start;gap:10;margin-bottom:10px}
+  code{font-family:'JetBrains Mono';font-size:13px;background:rgba(255,107,0,0.12);color:#FF9550;padding:2px 7px;border-radius:5px;border:1px solid rgba(255,107,0,0.2)}
+  .code-block{background:#0D1117;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:18px;margin:12px 0;font-family:'JetBrains Mono';font-size:13px;color:#E0E0E0;overflow-x:auto;line-height:1.8;position:relative}
+  .code-block .comment{color:#6e7681}
+  .code-block .keyword{color:#FF9500}
+  .code-block .string{color:#4CAF50}
+  .badge{display:inline-block;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;border:1px solid;margin:2px}
+  .badge-orange{background:rgba(255,107,0,0.15);color:#FF9550;border-color:rgba(255,107,0,0.3)}
+  .badge-green{background:rgba(76,175,80,0.15);color:#81C784;border-color:rgba(76,175,80,0.3)}
+  .badge-blue{background:rgba(33,150,243,0.15);color:#64B5F6;border-color:rgba(33,150,243,0.3)}
+  .divider{height:1px;background:rgba(255,255,255,0.07);margin:32px 0}
+  .warning{background:rgba(255,152,0,0.1);border:1px solid rgba(255,152,0,0.3);border-radius:10px;padding:14px;margin:12px 0;color:#FFB74D;font-size:13px}
+  .success{background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.3);border-radius:10px;padding:14px;margin:12px 0;color:#81C784;font-size:13px}
+  .arch-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+  .arch-item{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px;text-align:center}
+  .arch-item .icon{font-size:28px;margin-bottom:6px}
+  .arch-item .title{font-weight:600;color:white;font-size:13px}
+  .arch-item .sub{color:#666;font-size:11px;margin-top:3px}
+  .tbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px}
+  .tbl th{background:rgba(255,107,0,0.15);color:#FF9550;padding:10px 14px;text-align:left;font-weight:600}
+  .tbl td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);color:#ccc}
+  .tbl tr:hover td{background:rgba(255,255,255,0.03)}
+  a{color:#FF9500;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .file-tree{font-family:'JetBrains Mono';font-size:13px;color:#ccc;background:#0D1117;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:18px;line-height:2}
+  .file-tree .folder{color:#FF9500}
+  .file-tree .file{color:#81C784}
+  .file-tree .comment{color:#6e7681}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span>🛵</span>
+  <div>
+    <h1>Delivery LMS — Complete Publish Guide</h1>
+    <div style="color:rgba(255,255,255,0.8);font-size:13px">Supabase + Vercel = Live Platform in 30 minutes</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Architecture -->
+  <h2>🏗️ Full Architecture</h2>
+  <div class="arch-box">
+    <div class="arch-item"><div class="icon">⚛️</div><div class="title">React + Vite</div><div class="sub">Frontend</div></div>
+    <div class="arch-item"><div class="icon">🔐</div><div class="title">Supabase Auth</div><div class="sub">Login / Register</div></div>
+    <div class="arch-item"><div class="icon">🗄️</div><div class="title">Supabase DB</div><div class="sub">Progress save</div></div>
+    <div class="arch-item"><div class="icon">🚀</div><div class="title">Vercel</div><div class="sub">Free hosting</div></div>
+    <div class="arch-item"><div class="icon">🌐</div><div class="title">Custom Domain</div><div class="sub">Optional</div></div>
+  </div>
+  <div class="success">✅ Total Cost: ₹0/month (sab free tiers use kar rahe hain) — aap sirf custom domain ke liye pay karoge (~₹800/year)</div>
+
+  <div class="divider"></div>
+
+  <!-- Step 1: Supabase -->
+  <h2>🔷 STEP 1 — Supabase Setup (10 minutes)</h2>
+
+  <div class="step-card" data-step="1.1">
+    <h3>Account aur Project Banao</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div><a href="https://supabase.com" target="_blank">supabase.com</a> par jao → <strong>Sign up</strong> karo (GitHub se login karo)</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div><strong>New Project</strong> click karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">3</span><div>Fill karo:<br>• Name: <code>delivery-lms</code><br>• Database Password: koi bhi strong password (save kar lo!)<br>• Region: <strong>Southeast Asia (Singapore)</strong> — India ke liye fastest</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">4</span><div><strong>Create Project</strong> — 2 minute wait karo</div></div>
+    </div>
+  </div>
+
+  <div class="step-card" data-step="1.2">
+    <h3>Database Schema Run Karo</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div>Left sidebar mein <strong>SQL Editor</strong> click karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div><strong>New Query</strong> click karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">3</span><div>Diya hua <code>schema.sql</code> file ka poora content paste karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">4</span><div><strong>Run</strong> button press karo — green "Success" aana chahiye</div></div>
+    </div>
+    <div class="warning">⚠️ Agar error aaye to: SQL Editor mein top-right "Run" button dhundho — ya phir pura SQL copy karke ek baar mein run karo</div>
+  </div>
+
+  <div class="step-card" data-step="1.3">
+    <h3>API Keys Copy Karo</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div>Left sidebar: <strong>Settings</strong> → <strong>API</strong></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div>Copy karo aur safe jagah save karo:
+        <br>• <strong>Project URL</strong>: <code>https://xxxx.supabase.co</code>
+        <br>• <strong>anon / public key</strong>: <code>eyJhbGci...long string...</code>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Step 2: React Project -->
+  <h2>⚛️ STEP 2 — React Project Banao (5 minutes)</h2>
+
+  <div class="step-card" data-step="2.1">
+    <h3>Project Structure</h3>
+    <p>Apne computer par ek folder banao aur ye files create karo:</p>
+    <div class="file-tree">
+<span class="folder">delivery-lms/</span>
+├── <span class="file">index.html</span>
+├── <span class="file">vite.config.js</span>
+├── <span class="file">package.json</span>
+└── <span class="folder">src/</span>
+    ├── <span class="file">main.jsx</span>       <span class="comment"># Entry point</span>
+    └── <span class="file">App.jsx</span>        <span class="comment"># Diya hua delivery_lms_supabase.jsx ka content</span>
+    </div>
+  </div>
+
+  <div class="step-card" data-step="2.2">
+    <h3>package.json</h3>
+    <div class="code-block">
+{
+  <span class="string">"name"</span>: <span class="string">"delivery-lms"</span>,
+  <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="string">"type"</span>: <span class="string">"module"</span>,
+  <span class="string">"scripts"</span>: {
+    <span class="string">"dev"</span>: <span class="string">"vite"</span>,
+    <span class="string">"build"</span>: <span class="string">"vite build"</span>,
+    <span class="string">"preview"</span>: <span class="string">"vite preview"</span>
+  },
+  <span class="string">"dependencies"</span>: {
+    <span class="string">"react"</span>: <span class="string">"^18.2.0"</span>,
+    <span class="string">"react-dom"</span>: <span class="string">"^18.2.0"</span>
+  },
+  <span class="string">"devDependencies"</span>: {
+    <span class="string">"@vitejs/plugin-react"</span>: <span class="string">"^4.0.0"</span>,
+    <span class="string">"vite"</span>: <span class="string">"^5.0.0"</span>
+  }
+}
+    </div>
+  </div>
+
+  <div class="step-card" data-step="2.3">
+    <h3>vite.config.js</h3>
+    <div class="code-block">
+<span class="keyword">import</span> { defineConfig } <span class="keyword">from</span> <span class="string">'vite'</span>
+<span class="keyword">import</span> react <span class="keyword">from</span> <span class="string">'@vitejs/plugin-react'</span>
+
+<span class="keyword">export default</span> defineConfig({
+  plugins: [react()],
+  optimizeDeps: {
+    <span class="comment">// Supabase CDN se load hoga, exclude karo</span>
+    exclude: [<span class="string">'@supabase/supabase-js'</span>]
+  }
+})
+    </div>
+  </div>
+
+  <div class="step-card" data-step="2.4">
+    <h3>index.html</h3>
+    <div class="code-block">
+&lt;!DOCTYPE html&gt;
+&lt;html lang=<span class="string">"hi"</span>&gt;
+  &lt;head&gt;
+    &lt;meta charset=<span class="string">"UTF-8"</span> /&gt;
+    &lt;meta name=<span class="string">"viewport"</span> content=<span class="string">"width=device-width, initial-scale=1.0"</span> /&gt;
+    &lt;title&gt;Delivery LMS — India ka #1 Training Platform&lt;/title&gt;
+    &lt;link rel=<span class="string">"icon"</span> type=<span class="string">"image/svg+xml"</span> href=<span class="string">"data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg'&gt;&lt;text y='28' font-size='32'&gt;🛵&lt;/text&gt;&lt;/svg&gt;"</span> /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=<span class="string">"root"</span>&gt;&lt;/div&gt;
+    &lt;script type=<span class="string">"module"</span> src=<span class="string">"/src/main.jsx"</span>&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    </div>
+  </div>
+
+  <div class="step-card" data-step="2.5">
+    <h3>src/main.jsx</h3>
+    <div class="code-block">
+<span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>
+<span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom/client'</span>
+<span class="keyword">import</span> App <span class="keyword">from</span> <span class="string">'./App.jsx'</span>
+
+ReactDOM.createRoot(document.getElementById(<span class="string">'root'</span>)).render(
+  &lt;React.StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/React.StrictMode&gt;
+)
+    </div>
+  </div>
+
+  <div class="step-card" data-step="2.6">
+    <h3>src/App.jsx — Supabase Keys Add Karo</h3>
+    <p>Diya hua <code>delivery_lms_supabase.jsx</code> file ka content <code>src/App.jsx</code> mein paste karo. Phir file ke top mein apni keys replace karo:</p>
+    <div class="code-block">
+<span class="comment">// File ke shuru mein ye 2 lines replace karo:</span>
+<span class="keyword">const</span> SUPABASE_URL = <span class="string">"https://abcdefgh.supabase.co"</span>     <span class="comment">// apni URL</span>
+<span class="keyword">const</span> SUPABASE_ANON_KEY = <span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>  <span class="comment">// apni key</span>
+    </div>
+    <div class="warning">⚠️ ANON KEY safe hai — ye public hoti hai. SECRET KEY kabhi code mein mat dalo!</div>
+  </div>
+
+  <div class="step-card" data-step="2.7">
+    <h3>Local Test Karo</h3>
+    <div class="code-block">
+<span class="comment"># Terminal mein project folder mein jao</span>
+<span class="keyword">cd</span> delivery-lms
+
+<span class="comment"># Dependencies install karo</span>
+npm install
+
+<span class="comment"># Local server start karo</span>
+npm run dev
+
+<span class="comment"># Browser mein open karo: http://localhost:5173</span>
+    </div>
+    <div class="success">✅ Register karo, login karo, Day 1 complete karo — Supabase mein data save hona chahiye!</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Step 3: GitHub -->
+  <h2>🐙 STEP 3 — GitHub Upload (3 minutes)</h2>
+
+  <div class="step-card" data-step="3.1">
+    <h3>GitHub Repository Banao</h3>
+    <div class="code-block">
+<span class="comment"># Terminal mein:</span>
+git init
+git add .
+git commit -m <span class="string">"Initial delivery LMS"</span>
+
+<span class="comment"># github.com par New Repository banao: "delivery-lms"</span>
+<span class="comment"># Phir:</span>
+git remote add origin https://github.com/AAPKA_USERNAME/delivery-lms.git
+git branch -M main
+git push -u origin main
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Step 4: Vercel -->
+  <h2>🚀 STEP 4 — Vercel Deploy (5 minutes)</h2>
+
+  <div class="step-card" data-step="4.1">
+    <h3>Deploy Karo</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div><a href="https://vercel.com" target="_blank">vercel.com</a> → <strong>Sign up with GitHub</strong></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div><strong>Add New Project</strong> → <code>delivery-lms</code> repository select karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">3</span><div>Settings check karo:<br>• Framework: <strong>Vite</strong><br>• Build Command: <code>npm run build</code><br>• Output Directory: <code>dist</code></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">4</span><div><strong>Deploy!</strong> — 2 minute wait karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">5</span><div>🎉 Aapka URL mil jaayega: <code>delivery-lms.vercel.app</code></div></div>
+    </div>
+    <div class="success">✅ Har baar jab aap GitHub par code push karo, Vercel automatically redeploy karega!</div>
+  </div>
+
+  <div class="step-card" data-step="4.2">
+    <h3>Supabase mein Site URL Set Karo</h3>
+    <p>IMPORTANT: Supabase ko batao ki aapki site kahan hai (email verification ke liye):</p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div>Supabase Dashboard → <strong>Authentication</strong> → <strong>URL Configuration</strong></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div>Site URL: <code>https://delivery-lms.vercel.app</code> (apna URL dalo)</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">3</span><div>Redirect URLs mein bhi same URL add karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">4</span><div><strong>Save</strong></div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Step 5: Custom Domain -->
+  <h2>🌐 STEP 5 — Custom Domain (Optional, ~₹800/year)</h2>
+
+  <div class="step-card" data-step="5.1">
+    <h3>Domain Kharido</h3>
+    <table class="tbl">
+      <tr><th>Domain Provider</th><th>Price</th><th>Good For</th></tr>
+      <tr><td><a href="https://namecheap.com">Namecheap.com</a></td><td>~₹800–1200/year</td><td>International</td></tr>
+      <tr><td><a href="https://godaddy.com">GoDaddy.com</a></td><td>~₹999/year</td><td>Popular</td></tr>
+      <tr><td><a href="https://bigrock.in">BigRock.in</a></td><td>~₹600–900/year</td><td>India specific</td></tr>
+    </table>
+    <p>Suggested name: <code>deliverylms.in</code> ya <code>deliverytraining.in</code></p>
+  </div>
+
+  <div class="step-card" data-step="5.2">
+    <h3>Vercel mein Domain Add Karo</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">1</span><div>Vercel Dashboard → Project → <strong>Settings</strong> → <strong>Domains</strong></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">2</span><div>Apna domain type karo: <code>deliverylms.in</code></div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">3</span><div>Vercel ek <strong>CNAME record</strong> dega</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">4</span><div>Apne domain provider ke DNS settings mein wo record add karo</div></div>
+      <div style="display:flex;gap:8px;align-items:flex-start"><span class="step-num">5</span><div>24 ghante mein active ho jaayega ✅</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Database Tables Reference -->
+  <h2>🗄️ Database Tables — Quick Reference</h2>
+
+  <table class="tbl">
+    <tr><th>Table</th><th>Purpose</th><th>Key Columns</th></tr>
+    <tr><td><code>profiles</code></td><td>User ki profile info</td><td>id, name, created_at</td></tr>
+    <tr><td><code>progress</code></td><td>Per tab completion track</td><td>user_id, day_id, tab, completed</td></tr>
+    <tr><td><code>day_completions</code></td><td>Poora din complete status</td><td>user_id, day_id, quiz_score</td></tr>
+    <tr><td><code>certificates</code></td><td>Course certificate</td><td>user_id, issued_at, score</td></tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <!-- Admin Queries -->
+  <h2>📊 Useful Admin Queries</h2>
+
+  <p>Supabase SQL Editor mein run karo:</p>
+
+  <h3>All Enrolled Users</h3>
+  <div class="code-block">
+SELECT p.name, p.created_at,
+       COUNT(DISTINCT dc.day_id) as days_completed
+FROM profiles p
+LEFT JOIN day_completions dc ON p.id = dc.user_id
+GROUP BY p.id, p.name, p.created_at
+ORDER BY p.created_at DESC;
+  </div>
+
+  <h3>Leaderboard — Top Learners</h3>
+  <div class="code-block">
+SELECT p.name,
+       COUNT(DISTINCT dc.day_id) as days_done,
+       COALESCE(c.score, 0) as final_score
+FROM profiles p
+LEFT JOIN day_completions dc ON p.id = dc.user_id
+LEFT JOIN certificates c ON p.id = c.user_id
+GROUP BY p.id, p.name, c.score
+ORDER BY days_done DESC, final_score DESC;
+  </div>
+
+  <h3>Total Stats</h3>
+  <div class="code-block">
+SELECT
+  (SELECT COUNT(*) FROM profiles) as total_users,
+  (SELECT COUNT(DISTINCT user_id) FROM certificates) as certified,
+  (SELECT COUNT(*) FROM progress WHERE completed = true) as total_tabs_done;
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Future Upgrades -->
+  <h2>🚀 Future Upgrades</h2>
+
+  <table class="tbl">
+    <tr><th>Feature</th><th>Tool</th><th>Cost</th></tr>
+    <tr><td>Email notifications</td><td>Supabase Edge Functions + Resend</td><td>Free tier available</td></tr>
+    <tr><td>Admin dashboard</td><td>Retool ya custom page</td><td>Free tier available</td></tr>
+    <tr><td>Multiple languages</td><td>i18next library</td><td>Free</td></tr>
+    <tr><td>Video hosting (actual videos)</td><td>Cloudflare Stream</td><td>$5/month</td></tr>
+    <tr><td>Mobile app</td><td>Capacitor.js (same React code)</td><td>Free</td></tr>
+    <tr><td>Payments (paid course)</td><td>Razorpay + Supabase</td><td>2% per transaction</td></tr>
+  </table>
+
+  <div class="divider"></div>
+
+  <div class="success" style="text-align:center;padding:24px;font-size:15px">
+    🎉 <strong>Congratulations!</strong> Aapka Delivery LMS ab live hai!<br>
+    <span style="font-size:13px;opacity:0.8">React + Supabase + Vercel = Production-ready platform at ₹0/month</span>
+  </div>
+
+  <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:12px">
+    Files: delivery_lms_supabase.jsx + schema.sql + ye setup guide
+  </div>
+
+</div>
+</body>
+</html>
